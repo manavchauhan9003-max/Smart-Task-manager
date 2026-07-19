@@ -58,3 +58,19 @@ def replace_task(task_id: int, task: TaskCreate):
             existing_task["completed"] = task.completed
             return existing_task
     raise HTTPException(status_code=404, detail="Task not found")
+
+@app.patch("/tasks/{task_id}/complete")
+def complete_task(task_id: int):
+    for task in tasks:
+        if task["id"] == task_id:
+            task["completed"] = True
+            return task
+    raise HTTPException(status_code=404, detail="Task not found")
+
+@app.delete("/tasks/{task_id}", status_code=204)
+def delete_task(task_id: int):
+    for index, task in enumerate(tasks):
+        if task["id"] == task_id:
+            tasks.pop(index)
+            return
+    raise HTTPException(status_code=404, detail="Task not found")
