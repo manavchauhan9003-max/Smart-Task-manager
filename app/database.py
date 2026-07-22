@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "postgresql://postgres:Manav@123@localhost:5432/smart_task_manager"
+DATABASE_URL = "postgresql://postgres:Manav9003@localhost:5432/smart_task_manager"
 
 engine = create_engine(DATABASE_URL)
 
