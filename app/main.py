@@ -1,20 +1,26 @@
 from datetime import datetime
+from pathlib import Path
 from typing import Optional
 
 import jwt
 from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
 from app import models, schemas, security
 from app.database import engine, get_db
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+FRONTEND_DIR = BASE_DIR / "frontend"
+
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -46,9 +52,9 @@ def get_current_user(
     return user
 
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to Smart Task Manager API"}
+@app.get("/api/health")
+def health_check():
+    return {"status": "ok", "message": "Welcome to Smart Task Manager API"}
 
 
 @app.post("/register", response_model=schemas.UserResponse, status_code=201)
@@ -183,3 +189,7 @@ def delete_task(
 
     db.delete(task)
     db.commit()
+
+
+if FRONTEND_DIR.exists():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
