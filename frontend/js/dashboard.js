@@ -2,90 +2,126 @@ if (!getToken()) {
     window.location.href = "login.html";
 }
 
-// User Profile Handling
-const storedName = localStorage.getItem("user_name") || "User";
-const storedEmail = localStorage.getItem("user_email") || "user@taskflow.io";
-const nameEl = document.getElementById("display-user-name");
-const emailEl = document.getElementById("display-user-email");
-const avatarEl = document.getElementById("user-avatar-text");
+// User Profile Display Setup
+const userEmail = localStorage.getItem("user_email") || "user@taskflow.io";
+const userName = localStorage.getItem("user_name") || userEmail.split('@')[0];
+const firstInitial = userName.charAt(0).toUpperCase();
 
-if (nameEl) nameEl.textContent = storedName;
-if (emailEl) emailEl.textContent = storedEmail;
-if (avatarEl) avatarEl.textContent = storedName.charAt(0).toUpperCase();
+document.getElementById("sidebar-name").textContent = userName;
+document.getElementById("sidebar-email").textContent = userEmail;
+document.getElementById("sidebar-avatar").textContent = firstInitial;
+document.getElementById("nav-avatar").textContent = firstInitial;
+document.getElementById("welcome-heading").textContent = `Welcome back, ${userName}`;
 
-// Logout Handler
-const logoutBtn = document.getElementById("logout-btn");
-if (logoutBtn) {
-    logoutBtn.addEventListener("click", function () {
-        handleUnauthorized();
-    });
-}
+document.getElementById("modal-user-name").textContent = userName;
+document.getElementById("modal-user-email").textContent = userEmail;
+document.getElementById("modal-user-avatar").textContent = firstInitial;
 
-// State & Elements
-const taskList = document.getElementById("task-list");
-const loadingMessage = document.getElementById("loading-message");
-const searchInput = document.getElementById("search-input");
-const priorityFilter = document.getElementById("priority-filter");
-const tabButtons = document.querySelectorAll(".tab-btn");
+// Logout Action
+document.getElementById("logout-btn").addEventListener("click", function () {
+    handleUnauthorized();
+});
 
+// App State
 let allTasks = [];
 let activeTab = "all";
 
-// Tab Filter Event Listeners
-tabButtons.forEach(btn => {
-    btn.addEventListener("click", function () {
-        tabButtons.forEach(b => b.classList.remove("active"));
+// DOM Elements
+const taskList = document.getElementById("task-list");
+const loadingState = document.getElementById("loading-state");
+const searchInput = document.getElementById("global-search");
+const priorityFilter = document.getElementById("priority-filter");
+const filterTabs = document.querySelectorAll(".filter-tab");
+const navItems = document.querySelectorAll(".nav-item");
+
+// Sidebar Navigation Tabs
+navItems.forEach(item => {
+    item.addEventListener("click", function () {
+        navItems.forEach(n => n.classList.remove("active"));
+        this.classList.add("active");
+        
+        const view = this.getAttribute("data-view");
+        if (view === "dashboard" || view === "my-tasks") {
+            activeTab = "all";
+            setActiveFilterTab("all");
+        } else if (view === "completed") {
+            activeTab = "completed";
+            setActiveFilterTab("completed");
+        } else if (view === "important") {
+            activeTab = "high";
+            setActiveFilterTab("high");
+        } else if (view === "settings") {
+            openProfileModal();
+        }
+        applyFilters();
+    });
+});
+
+function setActiveFilterTab(tabName) {
+    filterTabs.forEach(t => {
+        if (t.getAttribute("data-tab") === tabName) {
+            t.classList.add("active");
+        } else {
+            t.classList.remove("active");
+        }
+    });
+}
+
+// Filter Tab Buttons
+filterTabs.forEach(tab => {
+    tab.addEventListener("click", function () {
+        filterTabs.forEach(t => t.classList.remove("active"));
         this.classList.add("active");
         activeTab = this.getAttribute("data-tab");
         applyFilters();
     });
 });
 
-// Load Tasks from API
+// API Task Fetching
 async function loadTasks() {
     try {
         const response = await authFetch("/tasks");
-
         if (!response.ok) {
             showToast("Failed to fetch tasks.", "error");
             return;
         }
 
         allTasks = await response.json();
-        updateStats();
+        updateStatistics();
         applyFilters();
     } catch (err) {
-        showToast("Network error loading tasks.", "error");
+        showToast("Network error. Please try again.", "error");
     } finally {
-        if (loadingMessage) loadingMessage.style.display = "none";
+        if (loadingState) loadingState.style.display = "none";
     }
 }
 
-// Update Header Statistics Counter
-function updateStats() {
-    const totalCount = allTasks.length;
-    const completedCount = allTasks.filter(t => t.status === "completed").length;
-    const pendingCount = totalCount - completedCount;
-    const highPriorityCount = allTasks.filter(t => t.priority === "high").length;
+// Statistics Overview
+function updateStatistics() {
+    const total = allTasks.length;
+    const completed = allTasks.filter(t => t.status === "completed").length;
+    const pending = total - completed;
+    const highPriority = allTasks.filter(t => t.priority === "high").length;
 
-    document.getElementById("stat-total").textContent = totalCount;
-    document.getElementById("stat-pending").textContent = pendingCount;
-    document.getElementById("stat-completed").textContent = completedCount;
-    document.getElementById("stat-high").textContent = highPriorityCount;
+    document.getElementById("stat-total").textContent = total;
+    document.getElementById("stat-completed").textContent = completed;
+    document.getElementById("stat-pending").textContent = pending;
+    document.getElementById("stat-overdue").textContent = highPriority;
 }
 
-// Filter and Search Logic
+// Apply Search & Filters
 function applyFilters() {
     const query = searchInput.value.toLowerCase().trim();
-    const priorityVal = priorityFilter.value;
+    const selectedPriority = priorityFilter.value;
 
-    const filtered = allTasks.filter(function (task) {
+    const filtered = allTasks.filter(task => {
         const matchesQuery = task.title.toLowerCase().includes(query) || (task.description && task.description.toLowerCase().includes(query));
-        const matchesPriority = priorityVal ? task.priority === priorityVal : true;
+        const matchesPriority = selectedPriority ? task.priority === selectedPriority : true;
         
         let matchesTab = true;
         if (activeTab === "pending") matchesTab = task.status !== "completed";
         if (activeTab === "completed") matchesTab = task.status === "completed";
+        if (activeTab === "high") matchesTab = task.priority === "high";
 
         return matchesQuery && matchesPriority && matchesTab;
     });
@@ -96,49 +132,49 @@ function applyFilters() {
 searchInput.addEventListener("input", applyFilters);
 priorityFilter.addEventListener("change", applyFilters);
 
-// Render Tasks to DOM Grid
+// Render Tasks Grid
 function renderTasks(tasks) {
     taskList.innerHTML = "";
 
     if (tasks.length === 0) {
         taskList.innerHTML = `
             <div class="empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"></path><rect x="9" y="3" width="6" height="4" rx="1"></rect><path d="M9 14l2 2 4-4"></path></svg>
-                <h3>No Tasks Found</h3>
-                <p>No tasks match your current filter. Create a new task or adjust your search.</p>
+                <h3>No tasks found</h3>
+                <p>No tasks match your current view. Click "+ New Task" to create one.</p>
             </div>
         `;
         return;
     }
 
-    tasks.forEach(function (task) {
+    tasks.forEach(task => {
         const card = document.createElement("div");
-        card.className = `task-card ${task.priority} ${task.status}`;
+        card.className = `task-card ${task.status === 'completed' ? 'completed' : ''}`;
 
+        const formattedDate = task.created_at ? new Date(task.created_at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Today';
         const isCompleted = task.status === "completed";
 
         card.innerHTML = `
             <div>
-                <div class="task-header">
-                    <h3 class="task-title">${escapeHtml(task.title)}</h3>
+                <div class="task-card-header">
+                    <h3 class="task-card-title">${escapeHtml(task.title)}</h3>
                 </div>
-                <div class="badges">
+                <div class="badges-row">
                     <span class="badge badge-priority ${task.priority}">${task.priority} priority</span>
-                    <span class="badge badge-status ${isCompleted ? 'completed' : 'pending'}">${isCompleted ? 'Done' : 'Pending'}</span>
+                    <span class="badge badge-status ${isCompleted ? 'completed' : 'pending'}">${isCompleted ? 'Completed' : 'In Progress'}</span>
                 </div>
-                ${task.description ? `<p class="task-desc">${escapeHtml(task.description)}</p>` : ''}
+                ${task.description ? `<p class="task-card-desc">${escapeHtml(task.description)}</p>` : ''}
             </div>
 
-            <div class="task-footer">
-                <button class="btn-icon complete" onclick="toggleTaskStatus(${task.id})">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    <span>${isCompleted ? 'Reopen' : 'Complete'}</span>
-                </button>
+            <div class="task-card-footer">
+                <span>Created ${formattedDate}</span>
                 <div class="task-actions">
-                    <button class="btn-icon" onclick="openEditModal(${task.id})">
+                    <button class="btn btn-secondary btn-sm" onclick="toggleTaskStatus(${task.id})">
+                        ${isCompleted ? 'Reopen' : 'Complete'}
+                    </button>
+                    <button class="btn-icon" onclick="openEditModal(${task.id})" title="Edit">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     </button>
-                    <button class="btn-icon delete" onclick="deleteTask(${task.id})">
+                    <button class="btn-icon danger" onclick="deleteTask(${task.id})" title="Delete">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     </button>
                 </div>
@@ -152,84 +188,78 @@ function renderTasks(tasks) {
 function escapeHtml(text) {
     if (!text) return "";
     return text.replace(/[&<>"']/g, function (m) {
-        return {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        }[m];
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
     });
 }
 
-// Complete Task Action
+// Complete Task Toggle
 async function toggleTaskStatus(taskId) {
-    const task = allTasks.find(t => t.id === taskId);
-    if (!task) return;
-
-    const response = await authFetch("/tasks/" + taskId + "/complete", {
-        method: "PATCH",
-    });
-
+    const response = await authFetch(`/tasks/${taskId}/complete`, { method: "PATCH" });
     if (!response.ok) {
-        showToast("Failed to update task status.", "error");
+        showToast("Failed to update status.", "error");
         return;
     }
-
-    showToast("Task status updated!", "success");
+    showToast("Task updated!", "success");
     loadTasks();
 }
 
-// Delete Task Action
+// Delete Task
 async function deleteTask(taskId) {
     if (!confirm("Are you sure you want to delete this task?")) return;
-
-    const response = await authFetch("/tasks/" + taskId, {
-        method: "DELETE",
-    });
-
+    const response = await authFetch(`/tasks/${taskId}`, { method: "DELETE" });
     if (!response.ok) {
         showToast("Failed to delete task.", "error");
         return;
     }
-
-    showToast("Task deleted successfully.", "info");
+    showToast("Task deleted.", "info");
     loadTasks();
 }
 
-// Task Creation Handler
+// Create Task Modal Setup
+const createModal = document.getElementById("create-modal");
+const openCreateModalBtn = document.getElementById("open-create-modal-btn");
+const fabNewTask = document.getElementById("fab-new-task");
+const closeCreateModalBtn = document.getElementById("close-create-modal");
+const cancelCreateModalBtn = document.getElementById("cancel-create-modal");
 const createForm = document.getElementById("create-task-form");
-if (createForm) {
-    createForm.addEventListener("submit", async function (event) {
-        event.preventDefault();
 
-        const title = document.getElementById("new-title").value.trim();
-        const priority = document.getElementById("new-priority").value;
-        const description = document.getElementById("new-desc").value.trim();
+function openCreateModal() { createModal.classList.add("active"); }
+function closeCreateModal() { createModal.classList.remove("active"); }
 
-        if (!title) return;
+openCreateModalBtn.addEventListener("click", openCreateModal);
+fabNewTask.addEventListener("click", openCreateModal);
+closeCreateModalBtn.addEventListener("click", closeCreateModal);
+cancelCreateModalBtn.addEventListener("click", closeCreateModal);
 
-        const response = await authFetch("/tasks", {
-            method: "POST",
-            body: JSON.stringify({ title, priority, description }),
-        });
+createForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const title = document.getElementById("create-title").value.trim();
+    const priority = document.getElementById("create-priority").value;
+    const description = document.getElementById("create-desc").value.trim();
 
-        if (!response.ok) {
-            showToast("Failed to create task.", "error");
-            return;
-        }
+    if (!title) return;
 
-        showToast("Task added successfully!", "success");
-        createForm.reset();
-        loadTasks();
+    const response = await authFetch("/tasks", {
+        method: "POST",
+        body: JSON.stringify({ title, priority, description })
     });
-}
 
-// Edit Modal Logic
+    if (!response.ok) {
+        showToast("Failed to create task.", "error");
+        return;
+    }
+
+    showToast("Task created successfully!", "success");
+    createForm.reset();
+    closeCreateModal();
+    loadTasks();
+});
+
+// Edit Task Modal Setup
 const editModal = document.getElementById("edit-modal");
+const closeEditModalBtn = document.getElementById("close-edit-modal");
+const cancelEditModalBtn = document.getElementById("cancel-edit-modal");
 const editForm = document.getElementById("edit-task-form");
-const closeEditBtn = document.getElementById("close-edit-modal");
-const cancelEditBtn = document.getElementById("cancel-edit-modal");
 
 function openEditModal(taskId) {
     const task = allTasks.find(t => t.id === taskId);
@@ -243,37 +273,47 @@ function openEditModal(taskId) {
     editModal.classList.add("active");
 }
 
-function closeEditModal() {
-    editModal.classList.remove("active");
-}
+function closeEditModal() { editModal.classList.remove("active"); }
 
-if (closeEditBtn) closeEditBtn.addEventListener("click", closeEditModal);
-if (cancelEditBtn) cancelEditBtn.addEventListener("click", closeEditModal);
+closeEditModalBtn.addEventListener("click", closeEditModal);
+cancelEditModalBtn.addEventListener("click", closeEditModal);
 
-if (editForm) {
-    editForm.addEventListener("submit", async function (e) {
-        e.preventDefault();
+editForm.addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const id = document.getElementById("edit-task-id").value;
+    const title = document.getElementById("edit-title").value.trim();
+    const priority = document.getElementById("edit-priority").value;
+    const description = document.getElementById("edit-desc").value.trim();
 
-        const id = document.getElementById("edit-task-id").value;
-        const title = document.getElementById("edit-title").value.trim();
-        const priority = document.getElementById("edit-priority").value;
-        const description = document.getElementById("edit-desc").value.trim();
-
-        const response = await authFetch("/tasks/" + id, {
-            method: "PUT",
-            body: JSON.stringify({ title, priority, description }),
-        });
-
-        if (!response.ok) {
-            showToast("Failed to update task.", "error");
-            return;
-        }
-
-        showToast("Task updated successfully!", "success");
-        closeEditModal();
-        loadTasks();
+    const response = await authFetch(`/tasks/${id}`, {
+        method: "PUT",
+        body: JSON.stringify({ title, priority, description })
     });
-}
+
+    if (!response.ok) {
+        showToast("Failed to update task.", "error");
+        return;
+    }
+
+    showToast("Task updated!", "success");
+    closeEditModal();
+    loadTasks();
+});
+
+// Profile Modal Setup
+const profileModal = document.getElementById("profile-modal");
+const openProfileBtn = document.getElementById("open-profile-btn");
+const navAvatar = document.getElementById("nav-avatar");
+const closeProfileModalBtn = document.getElementById("close-profile-modal");
+const cancelProfileModalBtn = document.getElementById("cancel-profile-modal");
+
+function openProfileModal() { profileModal.classList.add("active"); }
+function closeProfileModal() { profileModal.classList.remove("active"); }
+
+openProfileBtn.addEventListener("click", openProfileModal);
+navAvatar.addEventListener("click", openProfileModal);
+closeProfileModalBtn.addEventListener("click", closeProfileModal);
+cancelProfileModalBtn.addEventListener("click", closeProfileModal);
 
 // Initial Load
 loadTasks();
