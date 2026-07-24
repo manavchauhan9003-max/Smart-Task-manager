@@ -2,7 +2,7 @@ if (!getToken()) {
     window.location.href = "login.html";
 }
 
-// User Profile Display Setup
+// User Profile Setup
 const userEmail = localStorage.getItem("user_email") || "user@taskflow.io";
 const userName = localStorage.getItem("user_name") || userEmail.split('@')[0];
 const firstInitial = userName.charAt(0).toUpperCase();
@@ -22,17 +22,27 @@ document.getElementById("logout-btn").addEventListener("click", function () {
     handleUnauthorized();
 });
 
-// App State
+// App State & Elements
 let allTasks = [];
 let activeTab = "all";
 
-// DOM Elements
 const taskList = document.getElementById("task-list");
 const loadingState = document.getElementById("loading-state");
 const searchInput = document.getElementById("global-search");
 const priorityFilter = document.getElementById("priority-filter");
 const filterTabs = document.querySelectorAll(".filter-tab");
 const navItems = document.querySelectorAll(".nav-item");
+
+// Global ⌘K / / Keyboard Shortcut to Focus Search
+window.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInput.focus();
+    } else if (e.key === "/" && document.activeElement !== searchInput && document.activeElement.tagName !== "INPUT" && document.activeElement.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        searchInput.focus();
+    }
+});
 
 // Sidebar Navigation Tabs
 navItems.forEach(item => {
@@ -77,7 +87,7 @@ filterTabs.forEach(tab => {
     });
 });
 
-// API Task Fetching
+// API Fetching
 async function loadTasks() {
     try {
         const response = await authFetch("/tasks");
@@ -109,7 +119,7 @@ function updateStatistics() {
     document.getElementById("stat-overdue").textContent = highPriority;
 }
 
-// Apply Search & Filters
+// Apply Filters & Search
 function applyFilters() {
     const query = searchInput.value.toLowerCase().trim();
     const selectedPriority = priorityFilter.value;
@@ -139,8 +149,8 @@ function renderTasks(tasks) {
     if (tasks.length === 0) {
         taskList.innerHTML = `
             <div class="empty-state">
-                <h3>No tasks found</h3>
-                <p>No tasks match your current view. Click "+ New Task" to create one.</p>
+                <h3>No tasks in view</h3>
+                <p>Use the global search or click "+ New Task" to create a task.</p>
             </div>
         `;
         return;
@@ -160,22 +170,22 @@ function renderTasks(tasks) {
                 </div>
                 <div class="badges-row">
                     <span class="badge badge-priority ${task.priority}">${task.priority} priority</span>
-                    <span class="badge badge-status ${isCompleted ? 'completed' : 'pending'}">${isCompleted ? 'Completed' : 'In Progress'}</span>
+                    <span class="badge badge-status ${isCompleted ? 'completed' : 'pending'}">${isCompleted ? 'Done' : 'In Progress'}</span>
                 </div>
                 ${task.description ? `<p class="task-card-desc">${escapeHtml(task.description)}</p>` : ''}
             </div>
 
             <div class="task-card-footer">
-                <span>Created ${formattedDate}</span>
+                <span>${formattedDate}</span>
                 <div class="task-actions">
                     <button class="btn btn-secondary btn-sm" onclick="toggleTaskStatus(${task.id})">
                         ${isCompleted ? 'Reopen' : 'Complete'}
                     </button>
-                    <button class="btn-icon" onclick="openEditModal(${task.id})" title="Edit">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    <button class="btn-icon" onclick="openEditModal(${task.id})" title="Edit Task">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                     </button>
-                    <button class="btn-icon danger" onclick="deleteTask(${task.id})" title="Delete">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <button class="btn-icon danger" onclick="deleteTask(${task.id})" title="Delete Task">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     </button>
                 </div>
             </div>
@@ -199,7 +209,7 @@ async function toggleTaskStatus(taskId) {
         showToast("Failed to update status.", "error");
         return;
     }
-    showToast("Task updated!", "success");
+    showToast("Task status updated!", "success");
     loadTasks();
 }
 
@@ -249,7 +259,7 @@ createForm.addEventListener("submit", async function (e) {
         return;
     }
 
-    showToast("Task created successfully!", "success");
+    showToast("Task created!", "success");
     createForm.reset();
     closeCreateModal();
     loadTasks();
