@@ -1,4 +1,4 @@
-const form = document.getElementById("register-form");
+const form = document.getElementById("login-form");
 const errorMessage = document.getElementById("error-message");
 const togglePwBtn = document.getElementById("toggle-pw");
 const passwordInput = document.getElementById("password");
@@ -13,34 +13,50 @@ if (togglePwBtn && passwordInput) {
 form.addEventListener("submit", async function (event) {
     event.preventDefault();
 
-    const name = document.getElementById("name").value.trim();
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
     errorMessage.style.display = "none";
 
     try {
-        const response = await fetch("http://127.0.0.1:8000/register", {
+        const response = await fetch(API_BASE_URL + "/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ name, email, password }),
+            body: JSON.stringify({ email, password }),
         });
 
         if (!response.ok) {
             const data = await response.json();
-            errorMessage.textContent = data.detail || "Registration failed.";
+            errorMessage.textContent = data.detail || "Login failed. Please check your credentials.";
             errorMessage.style.display = "block";
-            showToast(data.detail || "Registration failed.", "error");
+            showToast(data.detail || "Invalid email or password.", "error");
             return;
         }
 
-        localStorage.setItem("user_name", name);
+        const data = await response.json();
+        localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user_email", email);
 
-        showToast("Account created successfully! Please sign in.", "success");
+        // Fetch user profile from /me
+        try {
+            const meRes = await fetch(API_BASE_URL + "/me", {
+                headers: { "Authorization": "Bearer " + data.access_token }
+            });
+            if (meRes.ok) {
+                const userObj = await meRes.json();
+                const cleanName = userObj.name || userObj.username || email.split('@')[0];
+                localStorage.setItem("user_name", cleanName);
+            } else {
+                localStorage.setItem("user_name", email.split('@')[0]);
+            }
+        } catch {
+            localStorage.setItem("user_name", email.split('@')[0]);
+        }
+
+        showToast("Login successful! Redirecting...", "success");
         setTimeout(() => {
-            window.location.href = "login.html";
-        }, 1200);
+            window.location.href = "dashboard.html";
+        }, 600);
     } catch (err) {
         errorMessage.textContent = "Network error. Please try again.";
         errorMessage.style.display = "block";

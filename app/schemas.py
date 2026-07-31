@@ -25,7 +25,7 @@ class TaskUpdate(BaseModel):
 
 
 class UserCreate(BaseModel):
-    username: Optional[str] = Field("user", min_length=1, max_length=50)
+    username: Optional[str] = None
     name: Optional[str] = None
     email: EmailStr
     password: str = Field(..., min_length=6)
@@ -33,7 +33,8 @@ class UserCreate(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
-    username: Optional[str] = "user"
+    username: Optional[str] = None
+    name: Optional[str] = None
     email: EmailStr
     created_at: Optional[datetime] = None
 
