@@ -1,35 +1,68 @@
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from datetime import datetime
-
-from pydantic import BaseModel, EmailStr
+from typing import Optional, Literal
 
 
 class TaskCreate(BaseModel):
-    title: str
-    priority: str = "medium"
-    description: str | None = None
+    title: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = Field(None, max_length=2000)
+    priority: Literal["low", "medium", "high"] = "medium"
+
+    @field_validator("title")
+    @classmethod
+    def title_must_not_be_blank(cls, value: str) -> str:
+        stripped = value.strip()
+        if not stripped:
+            raise ValueError("Title cannot be blank or only whitespace")
+        return stripped
+
+
+class TaskUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    priority: Optional[str] = None
+    status: Optional[str] = None
 
 
 class UserCreate(BaseModel):
-    name: str
+    username: Optional[str] = Field("user", min_length=1, max_length=50)
+    name: Optional[str] = None
     email: EmailStr
-    password: str
+    password: str = Field(..., min_length=6)
 
 
 class UserResponse(BaseModel):
     id: int
-    name: str
-    email: str
-    created_at: datetime
+    username: Optional[str] = "user"
+    email: EmailStr
+    created_at: Optional[datetime] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
-class UserLogin(BaseModel):
+class LoginRequest(BaseModel):
     email: EmailStr
     password: str
 
 
+UserLogin = LoginRequest
+
+
 class Token(BaseModel):
     access_token: str
-    token_type: str
+    token_type: str = "bearer"
+
+
+class TaskResponse(BaseModel):
+    id: int
+    title: str
+    description: Optional[str] = None
+    priority: str
+    status: str
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+

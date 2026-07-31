@@ -1,195 +1,95 @@
-from datetime import datetime
-from pathlib import Path
-from typing import Optional
-
-import jwt
-from fastapi import Depends, FastAPI, HTTPException
+import os
+import logging
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
-from sqlalchemy.orm import Session
 
-from app import models, schemas, security
-from app.database import engine, get_db
+from app import models
+from app.database import engine
+from app.api import auth, tasks
+from app.exceptions.tasks import TaskNotFoundError
+from app.exceptions.users import EmailAlreadyRegisteredError, InvalidCredentialsError
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-FRONTEND_DIR = BASE_DIR / "frontend"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+)
+logger = logging.getLogger("smart_task_manager")
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://127.0.0.1:5500", "http://localhost:5500",
+                   "http://127.0.0.1:8000", "http://localhost:8000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-bearer_scheme = HTTPBearer()
+
+@app.exception_handler(TaskNotFoundError)
+def handle_task_not_found(request: Request, exc: TaskNotFoundError):
+    logger.warning(f"Task not found: {exc}")
+    return JSONResponse(
+        status_code=404,
+        content={
+            "success": False,
+            "message": str(exc),
+            "error": {"code": "TASK_NOT_FOUND"},
+        },
+    )
 
 
-def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-    db: Session = Depends(get_db),
-) -> models.User:
-    token = credentials.credentials
+@app.exception_handler(EmailAlreadyRegisteredError)
+def handle_email_taken(request: Request, exc: EmailAlreadyRegisteredError):
+    logger.info(f"Registration rejected, duplicate email: {exc.email}")
+    return JSONResponse(
+        status_code=400,
+        content={
+            "success": False,
+            "message": str(exc),
+            "error": {"code": "EMAIL_ALREADY_REGISTERED"},
+        },
+    )
 
-    try:
-        payload = jwt.decode(token, security.SECRET_KEY, algorithms=[security.ALGORITHM])
-        email = payload.get("sub")
-        if email is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-    except jwt.ExpiredSignatureError:
-        raise HTTPException(status_code=401, detail="Token has expired")
-    except jwt.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
 
-    user = db.query(models.User).filter(models.User.email == email).first()
-    if user is None:
-        raise HTTPException(status_code=401, detail="User not found")
+@app.exception_handler(InvalidCredentialsError)
+def handle_invalid_credentials(request: Request, exc: InvalidCredentialsError):
+    logger.warning("Failed login attempt")
+    return JSONResponse(
+        status_code=401,
+        content={
+            "success": False,
+            "message": "Incorrect email or password",
+            "error": {"code": "INVALID_CREDENTIALS"},
+        },
+    )
 
-    return user
+
+@app.exception_handler(Exception)
+def handle_unexpected_error(request: Request, exc: Exception):
+    logger.error(f"Unhandled exception on {request.method} {request.url.path}: {exc}", exc_info=True)
+    return JSONResponse(
+        status_code=500,
+        content={
+            "success": False,
+            "message": "An unexpected error occurred",
+            "error": {"code": "INTERNAL_SERVER_ERROR"},
+        },
+    )
 
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok", "message": "Welcome to Smart Task Manager API"}
+    return {"status": "ok"}
 
 
-@app.post("/register", response_model=schemas.UserResponse, status_code=201)
-def register(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    existing_user = db.query(models.User).filter(models.User.email == user.email).first()
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
+app.include_router(auth.router)
+app.include_router(tasks.router)
 
-    new_user = models.User(
-        name=user.name,
-        email=user.email,
-        hashed_password=security.hash_password(user.password),
-    )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
-
-
-@app.post("/login", response_model=schemas.Token)
-def login(credentials: schemas.UserLogin, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == credentials.email).first()
-    if not user or not security.verify_password(credentials.password, user.hashed_password):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-
-    access_token = security.create_access_token(data={"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
-
-
-def task_to_dict(task: models.Task) -> dict:
-    return {
-        "id": task.id,
-        "title": task.title,
-        "description": task.description,
-        "priority": task.priority,
-        "status": task.status,
-        "created_at": task.created_at,
-        "updated_at": task.updated_at,
-    }
-
-
-@app.get("/tasks")
-def get_tasks(
-    priority: Optional[str] = None,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    query = db.query(models.Task)
-    if priority:
-        query = query.filter(models.Task.priority == priority)
-    results = query.all()
-    return [task_to_dict(t) for t in results]
-
-
-@app.get("/tasks/{task_id}")
-def get_task(
-    task_id: int,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    task = db.query(models.Task).filter(models.Task.id == task_id).first()
-    if task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-    return task_to_dict(task)
-
-
-@app.post("/tasks", status_code=201)
-def create_task(
-    task: schemas.TaskCreate,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    new_task = models.Task(
-        title=task.title,
-        description=task.description,
-        priority=task.priority,
-    )
-    db.add(new_task)
-    db.commit()
-    db.refresh(new_task)
-    return task_to_dict(new_task)
-
-
-@app.put("/tasks/{task_id}")
-def replace_task(
-    task_id: int,
-    task: schemas.TaskCreate,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    existing_task = db.query(models.Task).filter(models.Task.id == task_id).first()
-    if existing_task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    existing_task.title = task.title
-    existing_task.priority = task.priority
-    existing_task.description = task.description
-    existing_task.updated_at = datetime.utcnow()
-
-    db.commit()
-    db.refresh(existing_task)
-    return task_to_dict(existing_task)
-
-
-@app.patch("/tasks/{task_id}/complete")
-def complete_task(
-    task_id: int,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    task = db.query(models.Task).filter(models.Task.id == task_id).first()
-    if task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    task.status = "completed"
-    task.updated_at = datetime.utcnow()
-
-    db.commit()
-    db.refresh(task)
-    return task_to_dict(task)
-
-
-@app.delete("/tasks/{task_id}", status_code=204)
-def delete_task(
-    task_id: int,
-    db: Session = Depends(get_db),
-    current_user: models.User = Depends(get_current_user),
-):
-    task = db.query(models.Task).filter(models.Task.id == task_id).first()
-    if task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
-
-    db.delete(task)
-    db.commit()
-
-
-if FRONTEND_DIR.exists():
-    app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+FRONTEND_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "frontend")
+app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")

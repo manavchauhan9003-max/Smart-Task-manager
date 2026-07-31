@@ -1,4 +1,6 @@
-const API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE_URL = (typeof window !== "undefined" && window.location.origin && window.location.origin.includes("http")) 
+    ? window.location.origin 
+    : "http://127.0.0.1:8000";
 
 function getToken() {
     return localStorage.getItem("access_token");
