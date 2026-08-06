@@ -1,6 +1,6 @@
-from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from app import models, schemas
+from app.exceptions.tasks import TaskNotFoundError
 
 
 def get_task_or_404(db: Session, task_id: int, owner_id: int) -> models.Task:
@@ -8,7 +8,7 @@ def get_task_or_404(db: Session, task_id: int, owner_id: int) -> models.Task:
         models.Task.id == task_id, models.Task.owner_id == owner_id
     ).first()
     if task is None:
-        raise HTTPException(status_code=404, detail="Task not found")
+        raise TaskNotFoundError(task_id)
     return task
 
 
