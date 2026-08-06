@@ -1,6 +1,14 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from datetime import datetime
-from typing import Optional, Literal
+from typing import Optional, Literal, Generic, TypeVar
+
+T = TypeVar("T")
+
+
+class APIResponse(BaseModel, Generic[T]):
+    success: bool = True
+    message: str
+    data: T = None
 
 
 class TaskCreate(BaseModel):
@@ -28,7 +36,7 @@ class UserCreate(BaseModel):
     username: Optional[str] = None
     name: Optional[str] = None
     email: EmailStr
-    password: str = Field(..., min_length=6)
+    password: str = Field(..., min_length=8)
 
 
 class UserResponse(BaseModel):
@@ -65,5 +73,3 @@ class TaskResponse(BaseModel):
 
     class Config:
         from_attributes = True
-
-

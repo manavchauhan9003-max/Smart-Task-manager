@@ -59,3 +59,20 @@ function authFetch(path, options = {}) {
         return response;
     });
 }
+
+// Every backend response now follows: { success, message, data } on success,
+// or { success: false, message, error: { code } } on failure.
+// This helper unwraps that envelope once, so every caller reads the same way
+// instead of each one re-implementing "check success, read data or message".
+async function unwrapResponse(response) {
+    const body = await response.json();
+
+    if (!response.ok || body.success === false) {
+        const errorMessage = body.message || "Something went wrong";
+        const error = new Error(errorMessage);
+        error.code = body.error ? body.error.code : undefined;
+        throw error;
+    }
+
+    return { data: body.data, message: body.message };
+}

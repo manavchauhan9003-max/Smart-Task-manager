@@ -25,30 +25,17 @@ form.addEventListener("submit", async function (event) {
             body: JSON.stringify({ email, password }),
         });
 
-        if (!response.ok) {
-            const data = await response.json();
-            errorMessage.textContent = data.detail || "Login failed. Please check your credentials.";
-            errorMessage.style.display = "block";
-            showToast(data.detail || "Invalid email or password.", "error");
-            return;
-        }
+        const { data } = await unwrapResponse(response);
 
-        const data = await response.json();
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user_email", email);
 
         // Fetch user profile from /me
         try {
-            const meRes = await fetch(API_BASE_URL + "/me", {
-                headers: { "Authorization": "Bearer " + data.access_token }
-            });
-            if (meRes.ok) {
-                const userObj = await meRes.json();
-                const cleanName = userObj.name || userObj.username || email.split('@')[0];
-                localStorage.setItem("user_name", cleanName);
-            } else {
-                localStorage.setItem("user_name", email.split('@')[0]);
-            }
+            const meRes = await authFetch("/me");
+            const { data: userObj } = await unwrapResponse(meRes);
+            const cleanName = userObj.name || userObj.username || email.split('@')[0];
+            localStorage.setItem("user_name", cleanName);
         } catch {
             localStorage.setItem("user_name", email.split('@')[0]);
         }
@@ -58,8 +45,8 @@ form.addEventListener("submit", async function (event) {
             window.location.href = "dashboard.html";
         }, 600);
     } catch (err) {
-        errorMessage.textContent = "Network error. Please try again.";
+        errorMessage.textContent = err.message || "Login failed. Please check your credentials.";
         errorMessage.style.display = "block";
-        showToast("Network error. Please check server connection.", "error");
+        showToast(err.message || "Invalid email or password.", "error");
     }
 });

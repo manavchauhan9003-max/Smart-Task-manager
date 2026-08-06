@@ -26,13 +26,7 @@ form.addEventListener("submit", async function (event) {
             body: JSON.stringify({ name, username: name, email, password }),
         });
 
-        if (!response.ok) {
-            const data = await response.json();
-            errorMessage.textContent = data.detail || "Registration failed.";
-            errorMessage.style.display = "block";
-            showToast(data.detail || "Registration failed.", "error");
-            return;
-        }
+        await unwrapResponse(response);
 
         localStorage.setItem("user_name", name || email.split('@')[0]);
         localStorage.setItem("user_email", email);
@@ -42,8 +36,8 @@ form.addEventListener("submit", async function (event) {
             window.location.href = "login.html";
         }, 1000);
     } catch (err) {
-        errorMessage.textContent = "Network error. Please try again.";
+        errorMessage.textContent = err.message || "Registration failed.";
         errorMessage.style.display = "block";
-        showToast("Network error. Please check server connection.", "error");
+        showToast(err.message || "Registration failed.", "error");
     }
 });

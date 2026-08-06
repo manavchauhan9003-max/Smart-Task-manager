@@ -91,16 +91,13 @@ filterTabs.forEach(tab => {
 async function loadTasks() {
     try {
         const response = await authFetch("/tasks");
-        if (!response.ok) {
-            showToast("Failed to fetch tasks.", "error");
-            return;
-        }
+        const { data } = await unwrapResponse(response);
 
-        allTasks = await response.json();
+        allTasks = data;
         updateStatistics();
         applyFilters();
     } catch (err) {
-        showToast("Network error. Please try again.", "error");
+        showToast(err.message || "Failed to fetch tasks.", "error");
     } finally {
         if (loadingState) loadingState.style.display = "none";
     }
@@ -204,25 +201,27 @@ function escapeHtml(text) {
 
 // Complete Task Toggle
 async function toggleTaskStatus(taskId) {
-    const response = await authFetch(`/tasks/${taskId}/complete`, { method: "PATCH" });
-    if (!response.ok) {
-        showToast("Failed to update status.", "error");
-        return;
+    try {
+        const response = await authFetch(`/tasks/${taskId}/complete`, { method: "PATCH" });
+        const { message } = await unwrapResponse(response);
+        showToast(message, "success");
+        loadTasks();
+    } catch (err) {
+        showToast(err.message || "Failed to update status.", "error");
     }
-    showToast("Task status updated!", "success");
-    loadTasks();
 }
 
 // Delete Task
 async function deleteTask(taskId) {
     if (!confirm("Are you sure you want to delete this task?")) return;
-    const response = await authFetch(`/tasks/${taskId}`, { method: "DELETE" });
-    if (!response.ok) {
-        showToast("Failed to delete task.", "error");
-        return;
+    try {
+        const response = await authFetch(`/tasks/${taskId}`, { method: "DELETE" });
+        const { message } = await unwrapResponse(response);
+        showToast(message, "info");
+        loadTasks();
+    } catch (err) {
+        showToast(err.message || "Failed to delete task.", "error");
     }
-    showToast("Task deleted.", "info");
-    loadTasks();
 }
 
 // Create Task Modal Setup
@@ -249,20 +248,20 @@ createForm.addEventListener("submit", async function (e) {
 
     if (!title) return;
 
-    const response = await authFetch("/tasks", {
-        method: "POST",
-        body: JSON.stringify({ title, priority, description })
-    });
+    try {
+        const response = await authFetch("/tasks", {
+            method: "POST",
+            body: JSON.stringify({ title, priority, description })
+        });
+        const { message } = await unwrapResponse(response);
 
-    if (!response.ok) {
-        showToast("Failed to create task.", "error");
-        return;
+        showToast(message, "success");
+        createForm.reset();
+        closeCreateModal();
+        loadTasks();
+    } catch (err) {
+        showToast(err.message || "Failed to create task.", "error");
     }
-
-    showToast("Task created!", "success");
-    createForm.reset();
-    closeCreateModal();
-    loadTasks();
 });
 
 // Edit Task Modal Setup
@@ -295,19 +294,19 @@ editForm.addEventListener("submit", async function (e) {
     const priority = document.getElementById("edit-priority").value;
     const description = document.getElementById("edit-desc").value.trim();
 
-    const response = await authFetch(`/tasks/${id}`, {
-        method: "PUT",
-        body: JSON.stringify({ title, priority, description })
-    });
+    try {
+        const response = await authFetch(`/tasks/${id}`, {
+            method: "PUT",
+            body: JSON.stringify({ title, priority, description })
+        });
+        const { message } = await unwrapResponse(response);
 
-    if (!response.ok) {
-        showToast("Failed to update task.", "error");
-        return;
+        showToast(message, "success");
+        closeEditModal();
+        loadTasks();
+    } catch (err) {
+        showToast(err.message || "Failed to update task.", "error");
     }
-
-    showToast("Task updated!", "success");
-    closeEditModal();
-    loadTasks();
 });
 
 // Profile Modal Setup
