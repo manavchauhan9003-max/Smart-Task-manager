@@ -3,32 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Account - Smart Task Manager</title>
+    <title>Create Account - TaskFlow AI</title>
+    <meta name="description" content="Create your TaskFlow AI workspace account for intelligent task tracking.">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="auth-page">
     <div class="auth-card">
         <div class="auth-brand">
-            <div class="logo-box">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            </div>
-            <span>Smart Task Manager</span>
+            <div class="logo-box">T</div>
+            <span>TaskFlow AI</span>
         </div>
 
         <div class="auth-header">
-            <h1>Create an account</h1>
-            <p>Start organizing your tasks with minimal distraction</p>
+            <h1>Create workspace account</h1>
+            <p>Start organizing your tasks with minimal cognitive load</p>
         </div>
 
         <form id="register-form">
             <div class="form-group">
                 <label for="name">Full name</label>
-                <input type="text" id="name" placeholder="John Doe" required autocomplete="name">
+                <input type="text" id="name" placeholder="Alex Morgan" required autocomplete="name">
             </div>
 
             <div class="form-group">
                 <label for="email">Email address</label>
-                <input type="email" id="email" placeholder="name@company.com" required autocomplete="email">
+                <input type="email" id="email" placeholder="alex@taskflow.io" required autocomplete="email">
             </div>
 
             <div class="form-group">
@@ -36,14 +35,14 @@
                 <input type="password" id="password" placeholder="••••••••" required minlength="8" autocomplete="new-password">
             </div>
 
-            <p id="error-message" style="display:none; color: var(--danger); font-size: 0.8125rem; margin-bottom: 16px; text-align: center;"></p>
+            <p id="error-message" style="display:none; color: var(--danger); font-size: 13px; margin-bottom: 16px; text-align: center; font-weight: 500;"></p>
 
-            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
-                <span>Create account</span>
+            <button type="submit" class="btn btn-primary" style="width: 100%; height: 40px; margin-top: 8px;">
+                <span>Create Workspace</span>
             </button>
         </form>
 
-        <div style="text-align: center; margin-top: 24px; font-size: 0.875rem; color: var(--text-muted);">
+        <div class="auth-footer">
             Already have an account? <a href="login.html" style="font-weight: 600;">Sign in</a>
         </div>
     </div>
