@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from app import models, schemas
+from app.core.constants import TaskStatus
 from app.exceptions.tasks import TaskNotFoundError
 
 
@@ -44,7 +45,7 @@ def replace_task(db: Session, task_id: int, task: schemas.TaskCreate, owner_id: 
 
 def toggle_task_complete(db: Session, task_id: int, owner_id: int):
     task = get_task_or_404(db, task_id, owner_id)
-    task.status = "pending" if task.status == "completed" else "completed"
+    task.status = TaskStatus.PENDING if task.status == TaskStatus.COMPLETED else TaskStatus.COMPLETED
     db.commit()
     db.refresh(task)
     return task

@@ -3,6 +3,7 @@ from sqlalchemy.sql import func
 from sqlalchemy.orm import relationship
 
 from app.database import Base
+from app.core.constants import TaskStatus
 
 
 class Task(Base):
@@ -12,7 +13,7 @@ class Task(Base):
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     priority = Column(String(20), default="medium")
-    status = Column(String(20), default="pending")
+    status = Column(String(20), default=TaskStatus.PENDING)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(TIMESTAMP, server_default=func.now())
     updated_at = Column(TIMESTAMP, server_default=func.now(), onupdate=func.now())

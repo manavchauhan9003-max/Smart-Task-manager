@@ -1,15 +1,21 @@
 import os
 import logging
+import datetime
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import text
 
 from app import models
 from app.database import engine
 from app.api import auth, tasks
+from app.core.config import settings
 from app.exceptions.tasks import TaskNotFoundError
 from app.exceptions.users import EmailAlreadyRegisteredError, InvalidCredentialsError
+
+APP_VERSION = "1.0.0"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -70,6 +76,26 @@ def handle_invalid_credentials(request: Request, exc: InvalidCredentialsError):
     )
 
 
+@app.exception_handler(RequestValidationError)
+def handle_validation_error(request: Request, exc: RequestValidationError):
+    # Pydantic gives us a list of individual field errors; collapse them into
+    # one readable message, but keep the full detail available under "error"
+    # for clients that want to highlight specific fields.
+    first_error = exc.errors()[0]
+    field = ".".join(str(loc) for loc in first_error["loc"] if loc != "body")
+    message = f"{field}: {first_error['msg']}" if field else first_error["msg"]
+
+    logger.info(f"Validation failed on {request.method} {request.url.path}: {message}")
+    return JSONResponse(
+        status_code=422,
+        content={
+            "success": False,
+            "message": message,
+            "error": {"code": "VALIDATION_ERROR", "fields": exc.errors()},
+        },
+    )
+
+
 @app.exception_handler(Exception)
 def handle_unexpected_error(request: Request, exc: Exception):
     logger.error(f"Unhandled exception on {request.method} {request.url.path}: {exc}", exc_info=True)
@@ -85,7 +111,23 @@ def handle_unexpected_error(request: Request, exc: Exception):
 
 @app.get("/api/health")
 def health_check():
-    return {"status": "ok"}
+    try:
+        with engine.connect() as connection:
+            connection.execute(text("SELECT 1"))
+        database_status = "connected"
+        application_status = "ok"
+    except Exception as exc:
+        logger.error(f"Health check: database unreachable: {exc}")
+        database_status = "disconnected"
+        application_status = "degraded"
+
+    return {
+        "application_status": application_status,
+        "database_status": database_status,
+        "api_version": APP_VERSION,
+        "environment": settings.ENVIRONMENT,
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    }
 
 
 app.include_router(auth.router)

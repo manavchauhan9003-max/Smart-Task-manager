@@ -25,13 +25,6 @@ class TaskCreate(BaseModel):
         return stripped
 
 
-class TaskUpdate(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    priority: Optional[str] = None
-    status: Optional[str] = None
-
-
 class UserCreate(BaseModel):
     username: Optional[str] = None
     name: Optional[str] = None
