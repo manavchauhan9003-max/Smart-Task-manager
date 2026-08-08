@@ -31,4 +31,4 @@ EXPOSE 8000
 # Production-appropriate startup: no --reload (that's a development-only
 # convenience flag), and explicit --host 0.0.0.0 so the server accepts
 # connections from outside the container, not just from within it.
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
