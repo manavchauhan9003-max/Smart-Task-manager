@@ -1,0 +1,32 @@
+# Never let secrets into the image — injected at runtime instead (Step 3)
+.env
+.env.example
+
+# Local virtual environment — irrelevant inside the container,
+# the image installs its own dependencies fresh via requirements.txt
+venv/
+env/
+
+# Python bytecode/cache — regenerated automatically, no reason to ship it
+__pycache__/
+*.pyc
+*.pyo
+
+# Version control metadata — never needed at runtime
+.git/
+.gitignore
+
+# Editor/OS cruft
+.vscode/
+.idea/
+.DS_Store
+
+# Old Phase 4 raw-SQL scratch scripts, if still present — not part of the real app
+app/db_test.py
+app/insert_test.py
+app/select_test.py
+app/update_test.py
+app/delete_test.py
+
+# Docs not needed inside the running container
+README.md
