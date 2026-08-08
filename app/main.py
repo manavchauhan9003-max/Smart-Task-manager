@@ -29,7 +29,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://smart-task-manager-backend-pied.vercel.app/"],
+    allow_origins=["https://smart-task-manager-frontend-red.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
