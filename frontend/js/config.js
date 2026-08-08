@@ -1,0 +1,1 @@
+const API_BASE_URL = "https://smart-task-manager-sbt7.onrender.com";
