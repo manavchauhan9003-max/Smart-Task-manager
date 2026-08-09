@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Smart Task Manager</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskFlow AI - Your day, organized intelligently.</title>
   <script>
+    // Entry script: Use location.replace to avoid history pollution
     if (localStorage.getItem("access_token")) {
-      window.location.href = "dashboard.html";
+      window.location.replace("dashboard.html");
     } else {
-      window.location.href = "login.html";
+      window.location.replace("login.html");
     }
   </script>
 </head>

@@ -1,0 +1,118 @@
+/* ==========================================================================
+   TaskFlow AI - Design Tokens & Variables
+   Inspired by Linear, Notion, Vercel, Stripe & Apple HIG
+   ========================================================================== */
+
+:root {
+  /* Color System - Light Mode (Minimal Neutral Palette) */
+  --bg: #F7F8FA;
+  --surface: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  
+  --text: #111827;
+  --text-secondary: #6B7280;
+  --text-muted: #9CA3AF;
+  --text-tertiary: #D1D5DB;
+
+  --border: #E5E7EB;
+  --border-strong: #D1D5DB;
+  --border-subtle: #F3F4F6;
+
+  /* Indigo Brand Accent */
+  --accent: #4F46E5;
+  --accent-hover: #4338CA;
+  --accent-light: #EEF2FF;
+  --accent-border: #C7D2FE;
+
+  /* Functional Status Colors */
+  --success: #16A34A;
+  --success-light: #F0FDF4;
+  --success-border: #BBF7D0;
+
+  --warning: #D97706;
+  --warning-light: #FFFBEB;
+  --warning-border: #FDE68A;
+
+  --danger: #DC2626;
+  --danger-light: #FEF2F2;
+  --danger-border: #FECACA;
+
+  /* 8-Point Spacing System */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Typography Scale */
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 28px;
+  --text-3xl: 32px;
+
+  /* Border Radii */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Crisp Subtle Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 12px 24px -4px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+
+  /* Performance Micro-interactions */
+  --transition-fast: all 150ms ease;
+  --transition-normal: all 200ms ease;
+
+  --sidebar-width: 240px;
+  --header-height: 54px;
+  --bottom-nav-height: 56px;
+}
+
+/* Dark Mode Token Overrides */
+[data-theme="dark"] {
+  --bg: #09090B;
+  --surface: #111113;
+  --surface-elevated: #18181B;
+
+  --text: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --text-muted: #71717A;
+  --text-tertiary: #3F3F46;
+
+  --border: #27272A;
+  --border-strong: #3F3F46;
+  --border-subtle: #18181B;
+
+  /* Indigo Dark Accent */
+  --accent: #818CF8;
+  --accent-hover: #A5B4FC;
+  --accent-light: rgba(129, 140, 248, 0.12);
+  --accent-border: rgba(129, 140, 248, 0.25);
+
+  --success: #22C55E;
+  --success-light: rgba(34, 197, 94, 0.12);
+  --success-border: rgba(34, 197, 94, 0.25);
+
+  --warning: #F59E0B;
+  --warning-light: rgba(245, 158, 11, 0.12);
+  --warning-border: rgba(245, 158, 11, 0.25);
+
+  --danger: #EF4444;
+  --danger-light: rgba(239, 68, 68, 0.12);
+  --danger-border: rgba(239, 68, 68, 0.25);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px 0 rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 12px 24px 0 rgba(0, 0, 0, 0.5);
+}

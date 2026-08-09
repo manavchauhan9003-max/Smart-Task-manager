@@ -3,156 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskFlow AI - Production Workspace</title>
-    <meta name="description" content="AI-powered task management interface designed for daily focus, deep work, and team productivity.">
+    <title>TaskFlow AI - Workspace</title>
+    <meta name="description" content="TaskFlow AI: Your day, organized intelligently. Modern productivity workspace.">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="app-layout">
-        <!-- Permanent Left Sidebar Navigation -->
-        <aside class="sidebar" id="app-sidebar">
+        <!-- Desktop Permanent Sidebar (240-260px) -->
+        <aside class="sidebar">
             <div>
                 <div class="sidebar-brand">
-                    <div class="sidebar-logo">T</div>
-                    <span class="sidebar-title">TaskFlow</span>
-                    <span class="sidebar-ai-badge">AI 2.0</span>
+                    <div class="brand-mark">T</div>
+                    <span class="brand-title">TaskFlow AI</span>
                 </div>
 
-                <div class="nav-section-title">Workspace</div>
+                <div class="nav-section-label">Workspace</div>
                 <nav class="nav-menu">
-                    <div class="nav-item active" data-view="dashboard" id="nav-dashboard">
+                    <button class="nav-item active" data-view="overview" onclick="switchView('overview')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="3" width="7" height="7" rx="1"></rect><rect x="14" y="14" width="7" height="7" rx="1"></rect><rect x="3" y="14" width="7" height="7" rx="1"></rect></svg>
-                        <span>Dashboard</span>
-                    </div>
+                        <span>Overview</span>
+                    </button>
 
-                    <div class="nav-item" data-view="tasks" id="nav-tasks">
+                    <button class="nav-item" data-view="tasks" onclick="switchView('tasks')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
-                        <span>All Tasks</span>
+                        <span>My Tasks</span>
                         <span class="count-badge" id="badge-total-count">0</span>
-                    </div>
+                    </button>
 
-                    <div class="nav-item" data-view="today" id="nav-today">
+                    <button class="nav-item" data-view="today" onclick="switchView('today')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                        <span>Today's Focus</span>
-                        <span class="count-badge" id="badge-today-count">0</span>
-                    </div>
+                        <span>Today</span>
+                    </button>
 
-                    <div class="nav-item" data-view="ai-suggestions" id="nav-ai-suggestions">
+                    <button class="nav-item" data-view="ai" onclick="switchView('ai')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                        <span>AI Planner</span>
-                    </div>
+                        <span>AI Assistant</span>
+                    </button>
                 </nav>
 
-                <div class="nav-section-title" style="margin-top: 16px;">System</div>
+                <div class="nav-section-label" style="margin-top: 16px;">Preferences</div>
                 <nav class="nav-menu">
-                    <div class="nav-item" data-view="profile" id="nav-profile">
+                    <button class="nav-item" data-view="profile" onclick="switchView('profile')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         <span>Profile</span>
-                    </div>
+                    </button>
 
-                    <div class="nav-item" data-view="settings" id="nav-settings">
+                    <button class="nav-item" data-view="settings" onclick="switchView('settings')">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                        <span>Workspace Settings</span>
-                    </div>
+                        <span>Settings</span>
+                    </button>
                 </nav>
             </div>
 
             <div class="sidebar-footer">
-                <div class="user-badge" id="sidebar-user-trigger" title="User Profile">
-                    <div class="avatar" id="sidebar-avatar">U</div>
-                    <div class="user-details">
-                        <div class="name" id="sidebar-name">User</div>
-                        <div class="email" id="sidebar-email">user@taskflow.io</div>
-                    </div>
-                </div>
+                <button class="nav-item" onclick="handleUnauthorized()" style="color: var(--danger);">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>Log Out</span>
+                </button>
             </div>
         </aside>
 
-        <!-- Main Workspace Area -->
+        <!-- Main Workspace Body -->
         <div class="main-wrapper">
-            <!-- Top Navigation Bar -->
-            <header class="top-navbar">
-                <div class="breadcrumb" id="app-breadcrumb">
-                    <span>Workspace</span>
-                    <span class="breadcrumb-separator">/</span>
-                    <span class="active" id="current-view-title">Dashboard</span>
-                </div>
-
-                <div class="navbar-center">
-                    <div class="search-box">
-                        <span class="search-icon">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-                        </span>
-                        <input type="text" id="global-search" placeholder="Search tasks, descriptions, priorities..." aria-label="Search workspace">
-                        <div class="search-kbd"><span class="kbd">⌘K</span></div>
+            <!-- Topbar Header -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="breadcrumb">
+                        <button class="breadcrumb-btn" onclick="switchView('overview')" title="Return to main dashboard">Workspace</button>
+                        <span class="breadcrumb-separator">/</span>
+                        <span class="active" id="current-view-title">Overview</span>
                     </div>
                 </div>
 
-                <div class="nav-actions">
-                    <button class="dark-toggle-btn" id="theme-toggle-btn" title="Toggle Theme">
+                <div class="topbar-right">
+                    <!-- Search Input (Desktop) -->
+                    <div class="search-container">
+                        <svg class="search-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <input type="text" id="global-search" class="search-input" placeholder="Search tasks..." aria-label="Search workspace tasks">
+                        <div class="search-shortcut"><span class="kbd">⌘K</span></div>
+                    </div>
+
+                    <!-- Theme Toggle Button -->
+                    <button class="btn-icon" id="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Theme (Light / Dark)">
                         <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                        <span id="theme-label">Light</span>
                     </button>
 
-                    <!-- Notifications Dropdown -->
-                    <div class="popover-container">
-                        <button class="btn-icon" id="notification-btn" title="Notifications">
+                    <!-- Notifications Dropdown Popover -->
+                    <div class="dropdown-container">
+                        <button class="btn-icon" id="notif-trigger-btn" onclick="togglePopover('notif-dropdown')" title="Notifications">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                            <span class="notification-badge" id="notif-badge"></span>
                         </button>
-                        <div class="dropdown-menu notification-dropdown" id="notification-dropdown">
+                        <div class="dropdown-menu notification-dropdown" id="notif-dropdown">
                             <div class="notification-header">
                                 <h4>Notifications</h4>
-                                <button class="mark-read-btn" id="mark-notifications-read">Mark read</button>
+                                <button class="mark-read-btn" onclick="showToast('All notifications marked read', 'success')">Mark read</button>
                             </div>
                             <div class="notification-list">
                                 <div class="notification-item unread">
-                                    <div class="notification-icon">⚡</div>
+                                    <div class="notification-icon">✨</div>
                                     <div class="notification-content">
                                         <div class="notification-title">AI Schedule Sequence</div>
-                                        <div class="notification-desc">Optimal 4-hour focus block recommendation generated.</div>
-                                        <div class="notification-time">5 minutes ago</div>
-                                    </div>
-                                </div>
-                                <div class="notification-item unread">
-                                    <div class="notification-icon">📌</div>
-                                    <div class="notification-content">
-                                        <div class="notification-title">Workspace Connection</div>
-                                        <div class="notification-desc">PostgreSQL database & JWT authentication active.</div>
-                                        <div class="notification-time">1 hour ago</div>
+                                        <div class="notification-desc">Optimal daily focus block recommendation ready.</div>
+                                        <div class="notification-time">5m ago</div>
                                     </div>
                                 </div>
                                 <div class="notification-item">
-                                    <div class="notification-icon">🎯</div>
+                                    <div class="notification-icon">📌</div>
                                     <div class="notification-content">
-                                        <div class="notification-title">Velocity Target Reached</div>
-                                        <div class="notification-desc">Productivity score increased by +14% this week.</div>
-                                        <div class="notification-time">3 hours ago</div>
+                                        <div class="notification-title">Workspace Synchronization</div>
+                                        <div class="notification-desc">PostgreSQL backend authenticated.</div>
+                                        <div class="notification-time">1h ago</div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Profile Dropdown Trigger -->
-                    <div class="popover-container">
-                        <div class="avatar" id="nav-avatar" style="cursor: pointer;" title="Profile Options">U</div>
+                    <!-- Profile Dropdown Avatar -->
+                    <div class="dropdown-container">
+                        <div class="avatar user-avatar-display" onclick="togglePopover('profile-dropdown')" style="cursor: pointer;" title="Profile Menu">U</div>
                         <div class="dropdown-menu" id="profile-dropdown">
                             <div class="dropdown-header">
-                                <div class="user-name" id="dropdown-user-name">User</div>
-                                <div class="user-email" id="dropdown-user-email">user@taskflow.io</div>
+                                <div class="user-name user-name-display">User</div>
+                                <div class="user-email user-email-display">user@taskflow.io</div>
                             </div>
-                            <button class="dropdown-item" id="dropdown-profile-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <button class="dropdown-item" onclick="switchView('profile'); closeAllPopovers();">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                                 <span>Profile Details</span>
                             </button>
-                            <button class="dropdown-item" id="dropdown-settings-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                            <button class="dropdown-item" onclick="switchView('settings'); closeAllPopovers();">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
                                 <span>Settings</span>
                             </button>
                             <div style="border-top: 1px solid var(--border-subtle); margin: 4px 0;"></div>
-                            <button class="dropdown-item danger" id="dropdown-logout-btn">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                            <button class="dropdown-item danger" onclick="handleUnauthorized()">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
                                 <span>Log Out</span>
                             </button>
                         </div>
@@ -160,321 +145,191 @@
                 </div>
             </header>
 
-            <!-- Main Content Container -->
-            <main class="content-area" id="main-content">
-                <!-- SEPARATE VIEW 1: Dashboard View -->
-                <div class="view-section" id="view-dashboard">
-                    <div class="page-header">
+            <!-- Workspace Content Container -->
+            <main class="content-container">
+                <!-- VIEW 1: Overview Dashboard -->
+                <div class="view-section" id="view-overview">
+                    <div style="display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
                         <div>
-                            <h1 id="welcome-heading">Welcome back, User</h1>
-                            <p>Overview of your workspace performance, today's schedule and AI suggestions.</p>
+                            <h1 id="greeting-heading">Good morning 👋</h1>
+                            <p style="font-size: 14px; color: var(--text-secondary); margin-top: 4px;">Here's what needs your attention today.</p>
                         </div>
-                        <div class="header-actions">
-                            <button class="btn btn-primary btn-open-create">
+                        <div style="display: flex; gap: 10px;">
+                            <button class="btn btn-secondary" onclick="openAskAIAssistantModal()">
+                                <span>✨ Ask TaskFlow</span>
+                            </button>
+                            <button class="btn btn-primary" onclick="openCreateTaskModal()">
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                <span>New Task</span>
+                                <span>Add task</span>
                             </button>
                         </div>
                     </div>
 
-                    <!-- Statistics Overview Cards Grid -->
-                    <section class="stats-grid" aria-label="Workspace metrics">
+                    <!-- Statistics Cards -->
+                    <div class="stats-grid">
                         <div class="stat-card">
-                            <div class="stat-info">
-                                <div class="label">Total Tasks</div>
-                                <div class="value" id="stat-total">0</div>
-                                <div class="subtext">Active workspace tasks</div>
+                            <div class="stat-header">
+                                <span class="stat-label">Total tasks</span>
+                                <span class="stat-indicator active"></span>
                             </div>
-                            <div class="stat-icon-wrapper">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
-                            </div>
+                            <span class="stat-value" id="stat-total-val">0</span>
                         </div>
-
                         <div class="stat-card">
-                            <div class="stat-info">
-                                <div class="label">Completed</div>
-                                <div class="value" id="stat-completed">0</div>
-                                <div class="subtext">Finished tasks</div>
+                            <div class="stat-header">
+                                <span class="stat-label">Active</span>
+                                <span class="stat-indicator active"></span>
                             </div>
-                            <div class="stat-icon-wrapper completed">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                            </div>
+                            <span class="stat-value" id="stat-active-val">0</span>
                         </div>
-
                         <div class="stat-card">
-                            <div class="stat-info">
-                                <div class="label">In Progress</div>
-                                <div class="value" id="stat-pending">0</div>
-                                <div class="subtext">Pending completion</div>
+                            <div class="stat-header">
+                                <span class="stat-label">Completed</span>
+                                <span class="stat-indicator completed"></span>
                             </div>
-                            <div class="stat-icon-wrapper pending">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 16 14"></polyline></svg>
-                            </div>
+                            <span class="stat-value" id="stat-completed-val">0</span>
                         </div>
-
                         <div class="stat-card">
-                            <div class="stat-info">
-                                <div class="label">High Priority</div>
-                                <div class="value" id="stat-overdue">0</div>
-                                <div class="subtext">Urgent tasks</div>
+                            <div class="stat-header">
+                                <span class="stat-label">Overdue</span>
+                                <span class="stat-indicator overdue"></span>
                             </div>
-                            <div class="stat-icon-wrapper overdue">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                            </div>
+                            <span class="stat-value" id="stat-overdue-val">0</span>
                         </div>
-                    </section>
+                    </div>
 
-                    <!-- Dashboard Modular Layout Grid -->
-                    <div class="dashboard-grid">
-                        <div class="dashboard-main-col">
-                            <!-- Tasks List Panel -->
-                            <div class="panel">
-                                <div class="panel-header">
-                                    <div class="panel-title">
-                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"></path></svg>
-                                        <span>Recent Focus Tasks</span>
-                                    </div>
-                                    <span class="panel-action" id="dashboard-view-all-link">View All Tasks &rarr;</span>
-                                </div>
+                    <!-- Today's Progress Bar Component -->
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <span class="progress-title">Today's Progress</span>
+                            <span class="progress-percentage" id="progress-percent-val">0%</span>
+                        </div>
+                        <div class="progress-track">
+                            <div class="progress-fill" id="progress-bar-fill" style="width: 0%;"></div>
+                        </div>
+                        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;" id="progress-count-val">0 of 0 tasks completed</p>
+                    </div>
 
-                                <div id="dashboard-task-list" class="tasks-grid"></div>
-                            </div>
+                    <!-- Today's Tasks Section -->
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border-subtle);">
+                            <h3 style="font-size: 16px; font-weight: 600;">Today's Tasks</h3>
+                            <button class="btn btn-secondary btn-sm" onclick="openCreateTaskModal()">+ Add task</button>
                         </div>
 
-                        <!-- Side Column Widgets -->
-                        <div class="dashboard-side-col">
-                            <!-- Productivity Score Placeholder -->
-                            <div class="productivity-card">
-                                <div class="productivity-header">
-                                    <span class="section-label">Productivity Velocity</span>
-                                    <span class="score-label">+14% vs last week</span>
-                                </div>
-                                <div class="score-display">
-                                    <span class="score-num" id="productivity-score-val">84</span>
-                                    <span style="font-size: 13px; color: var(--text-muted);">/ 100</span>
-                                </div>
-                                <div class="progress-bar-bg">
-                                    <div class="progress-bar-fill" id="productivity-progress" style="width: 84%;"></div>
-                                </div>
-                                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 4px;">
-                                    Based on completion rate and high-priority turnaround.
-                                </div>
-                            </div>
-
-                            <!-- Quick Actions -->
-                            <div class="panel">
-                                <div class="panel-header">
-                                    <div class="panel-title">Quick Actions</div>
-                                </div>
-                                <div class="quick-actions-grid">
-                                    <button class="quick-action-btn btn-open-create">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                        <span>Add Task</span>
-                                    </button>
-                                    <button class="quick-action-btn" id="qa-ai-plan">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"></path></svg>
-                                        <span>AI Plan</span>
-                                    </button>
-                                    <button class="quick-action-btn" id="qa-filter-high">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                                        <span>Urgent</span>
-                                    </button>
-                                    <button class="quick-action-btn" id="qa-settings">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
-                                        <span>Settings</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- Priority Distribution Widget -->
-                            <div class="panel">
-                                <div class="panel-header">
-                                    <div class="panel-title">Priority Breakdown</div>
-                                </div>
-                                <div class="priority-distribution-bars">
-                                    <div class="dist-row">
-                                        <div class="dist-label-row">
-                                            <span>High Priority</span>
-                                            <span id="dist-high-count">0</span>
-                                        </div>
-                                        <div class="dist-bar-bg">
-                                            <div class="dist-bar-fill high" id="dist-high-bar" style="width: 0%;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="dist-row">
-                                        <div class="dist-label-row">
-                                            <span>Medium Priority</span>
-                                            <span id="dist-medium-count">0</span>
-                                        </div>
-                                        <div class="dist-bar-bg">
-                                            <div class="dist-bar-fill medium" id="dist-medium-bar" style="width: 0%;"></div>
-                                        </div>
-                                    </div>
-                                    <div class="dist-row">
-                                        <div class="dist-label-row">
-                                            <span>Low Priority</span>
-                                            <span id="dist-low-count">0</span>
-                                        </div>
-                                        <div class="dist-bar-bg">
-                                            <div class="dist-bar-fill low" id="dist-low-bar" style="width: 0%;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <div id="overview-tasks-list"></div>
                     </div>
                 </div>
 
-                <!-- SEPARATE VIEW 2: All Tasks View -->
+                <!-- VIEW 2: My Tasks View -->
                 <div class="view-section" id="view-tasks" style="display: none;">
-                    <div class="page-header">
-                        <div>
-                            <h1>All Workspace Tasks</h1>
-                            <p>Manage, filter, search, and track all your active and completed tasks.</p>
-                        </div>
-                        <div class="header-actions">
-                            <button class="btn btn-primary btn-open-create">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                <span>Create Task</span>
-                            </button>
-                        </div>
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
+                        <h1>My Tasks</h1>
+                        <button class="btn btn-primary" onclick="openCreateTaskModal()">+ Create task</button>
                     </div>
 
-                    <div class="panel">
-                        <div class="toolbar">
-                            <div class="filter-tabs">
-                                <button class="filter-tab active" data-tab="all">All</button>
-                                <button class="filter-tab" data-tab="pending">In Progress</button>
-                                <button class="filter-tab" data-tab="completed">Completed</button>
-                                <button class="filter-tab" data-tab="high">High Priority</button>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
+                        <!-- Search & Filter Controls -->
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                            <div class="search-container" style="width: 100%; max-width: 280px;">
+                                <svg class="search-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                <input type="text" id="tasks-search" class="search-input" placeholder="Search tasks...">
                             </div>
 
-                            <div style="display: flex; gap: 8px;">
-                                <select id="tasks-priority-filter" aria-label="Filter by priority">
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <div class="filter-tabs">
+                                    <button class="filter-tab tasks-tab-filter active" data-tab="all">All</button>
+                                    <button class="filter-tab tasks-tab-filter" data-tab="active">Active</button>
+                                    <button class="filter-tab tasks-tab-filter" data-tab="completed">Completed</button>
+                                    <button class="filter-tab tasks-tab-filter" data-tab="overdue">Overdue</button>
+                                </div>
+
+                                <select id="tasks-priority-filter" class="form-select" style="width: auto; height: 32px; font-size: 12px;">
                                     <option value="">All Priorities</option>
                                     <option value="high">High Priority</option>
                                     <option value="medium">Medium Priority</option>
                                     <option value="low">Low Priority</option>
                                 </select>
+
+                                <select id="tasks-sort-select" class="form-select" style="width: auto; height: 32px; font-size: 12px;">
+                                    <option value="newest">Sort: Newest</option>
+                                    <option value="priority">Sort: Priority</option>
+                                </select>
                             </div>
                         </div>
 
-                        <div id="tasks-view-list" class="tasks-grid"></div>
+                        <div id="all-tasks-list"></div>
 
-                        <div id="tasks-empty-state" class="empty-state" style="display: none;">
+                        <!-- Minimal Empty State -->
+                        <div id="tasks-empty-state" class="empty-state-box" style="display: none;">
                             <div class="empty-state-icon">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
                             </div>
-                            <h4>No tasks found</h4>
-                            <p>Create your first task or change your search filters to view items.</p>
-                            <button class="btn btn-primary btn-sm btn-open-create">Create Task</button>
+                            <h4 style="font-size: 15px; font-weight: 600; margin-bottom: 4px;">No tasks yet</h4>
+                            <p style="font-size: 13px; color: var(--text-secondary); max-width: 280px; margin-bottom: 16px;">Create your first task and start organizing your day.</p>
+                            <button class="btn btn-primary btn-sm" onclick="openCreateTaskModal()">Create task</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- SEPARATE VIEW 3: Today's Focus View -->
+                <!-- VIEW 3: Today's Focus View -->
                 <div class="view-section" id="view-today" style="display: none;">
-                    <div class="page-header">
-                        <div>
-                            <h1>Today's Focus</h1>
-                            <p>Concentrated execution mode for pending tasks and urgent priorities today.</p>
-                        </div>
-                        <div class="header-actions">
-                            <button class="btn btn-accent btn-open-create">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                                <span>Add Today's Task</span>
-                            </button>
-                        </div>
+                    <div style="margin-bottom: 20px;">
+                        <h1>Today's Focus</h1>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Concentrated execution view for active priorities today.</p>
                     </div>
-
-                    <div class="panel" style="margin-bottom: 24px; background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);">
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <div>
-                                <span class="section-label">Deep Work Target</span>
-                                <h3 style="margin-top: 4px;">4 Hours Focused Work Goal</h3>
-                            </div>
-                            <div style="font-size: 13px; font-weight: 600; color: var(--accent);" id="today-remaining-count">0 tasks remaining</div>
-                        </div>
-                    </div>
-
-                    <div class="panel">
-                        <div class="panel-header">
-                            <div class="panel-title">Active Priority Execution List</div>
-                        </div>
-                        <div id="today-view-list" class="tasks-grid"></div>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 20px;">
+                        <div id="today-focus-list"></div>
                     </div>
                 </div>
 
-                <!-- SEPARATE VIEW 4: AI Planner View -->
-                <div class="view-section" id="view-ai-suggestions" style="display: none;">
-                    <div class="page-header">
-                        <div>
-                            <h1>AI Task Planner & Assistant</h1>
-                            <p>Intelligent breakdown, optimal schedule recommendation, and productivity suggestions.</p>
-                        </div>
+                <!-- VIEW 4: AI Assistant Placeholder View -->
+                <div class="view-section" id="view-ai" style="display: none;">
+                    <div style="margin-bottom: 20px;">
+                        <h1>✨ Ask TaskFlow AI</h1>
+                        <p style="font-size: 14px; color: var(--text-secondary);">AI-powered schedule suggestions, task breakdown, and daily planning.</p>
                     </div>
 
-                    <div class="ai-suggestions-banner" style="margin-bottom: 24px;">
-                        <div class="ai-banner-header">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
-                            <span>AI Assistant Roadmap</span>
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; color: var(--accent);">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                            <h3 style="font-size: 16px; font-weight: 600;">AI Productivity Assistant</h3>
                         </div>
-                        <div class="ai-banner-title">Smart Focus Recommendations</div>
-                        <div class="ai-banner-desc">TaskFlow AI prioritizes tasks based on estimated duration, priority weight, and historical completion speed.</div>
-                        <div class="ai-suggestions-list">
-                            <div class="ai-suggestion-item">
-                                <div class="suggestion-text">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);"><polyline points="9 11 12 14 22 4"></polyline></svg>
-                                    <span>Recommended: Batch complete low-priority administrative tasks in a 20-minute block.</span>
-                                </div>
-                                <button class="btn btn-secondary btn-sm" onclick="showToast('Schedule optimized', 'success')">Optimize Schedule</button>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5;">
+                            TaskFlow AI analyzes your active tasks, due dates, and priority weighting to generate optimal focus sequences.
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <div style="padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; justify-content: space-between;">
+                                <span>💡 Prioritize high-impact engineering refactor task first.</span>
+                                <button class="btn btn-secondary btn-sm" onclick="showToast('Suggestion applied', 'success')">Apply</button>
                             </div>
-                            <div class="ai-suggestion-item">
-                                <div class="suggestion-text">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: var(--accent);"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-                                    <span>Break down complex engineering milestones into 3 sub-tasks.</span>
-                                </div>
-                                <button class="btn btn-secondary btn-sm" onclick="showToast('AI Breakdown active', 'success')">Generate Subtasks</button>
+                            <div style="padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 13px; display: flex; align-items: center; justify-content: space-between;">
+                                <span>🧩 Break down multi-step roadmap task into 3 subtasks.</span>
+                                <button class="btn btn-secondary btn-sm" onclick="showToast('AI Breakdown scheduled', 'success')">Break Down</button>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="panel">
-                        <div class="panel-header">
-                            <div class="panel-title">AI Priority Ranking</div>
-                        </div>
-                        <div id="ai-view-list" class="tasks-grid"></div>
                     </div>
                 </div>
 
-                <!-- SEPARATE VIEW 5: Profile View -->
+                <!-- VIEW 5: Profile View -->
                 <div class="view-section" id="view-profile" style="display: none;">
-                    <div class="page-header">
-                        <div>
-                            <h1>User Profile</h1>
-                            <p>Manage your account settings, personal details and preferences.</p>
-                        </div>
+                    <div style="margin-bottom: 20px;">
+                        <h1>Profile Details</h1>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Manage your personal account details and custom workspace role.</p>
                     </div>
-                    <div class="panel" style="max-width: 640px;">
-                        <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 20px; border-bottom: 1px solid var(--border-subtle);">
-                            <div class="avatar" id="profile-page-avatar" style="width: 56px; height: 56px; font-size: 20px;">U</div>
-                            <div>
-                                <h3 id="profile-page-name">User Name</h3>
-                                <p id="profile-page-email" style="font-size: 13px; color: var(--text-muted);">user@taskflow.io</p>
-                            </div>
-                        </div>
+
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; max-width: 540px;">
                         <form id="profile-update-form">
                             <div class="form-group">
                                 <label for="profile-name-input">Full Name *</label>
-                                <input type="text" id="profile-name-input" required>
+                                <input type="text" id="profile-name-input" class="form-input" required>
                             </div>
                             <div class="form-group">
                                 <label for="profile-email-input">Email Address *</label>
-                                <input type="email" id="profile-email-input" required>
+                                <input type="email" id="profile-email-input" class="form-input" required>
                             </div>
                             <div class="form-group">
                                 <label for="profile-role-input">Role & Permissions</label>
-                                <input type="text" id="profile-role-input" list="role-suggestions" placeholder="Select a suggestion or type custom role...">
+                                <input type="text" id="profile-role-input" class="form-input" list="role-suggestions" placeholder="Choose a suggestion or type custom role...">
                                 <datalist id="role-suggestions">
                                     <option value="Workspace Owner / Senior Developer"></option>
                                     <option value="Product Manager"></option>
@@ -488,36 +343,25 @@
                     </div>
                 </div>
 
-                <!-- SEPARATE VIEW 6: Settings View -->
+                <!-- VIEW 6: Settings View -->
                 <div class="view-section" id="view-settings" style="display: none;">
-                    <div class="page-header">
-                        <div>
-                            <h1>Workspace Settings</h1>
-                            <p>Configure global application rules, AI assistant options, and shortcuts.</p>
-                        </div>
+                    <div style="margin-bottom: 20px;">
+                        <h1>Workspace Settings</h1>
+                        <p style="font-size: 14px; color: var(--text-secondary);">Configure workspace rules and accessibility preferences.</p>
                     </div>
-                    <div class="panel" style="max-width: 640px;">
-                        <div class="panel-header">
-                            <div class="panel-title">Preferences</div>
-                        </div>
+
+                    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 24px; max-width: 540px;">
                         <div class="form-group">
-                            <label>Default Priority for New Tasks</label>
-                            <select id="settings-default-priority">
+                            <label>Default Task Priority</label>
+                            <select class="form-select">
                                 <option value="medium">Medium Priority</option>
                                 <option value="high">High Priority</option>
                                 <option value="low">Low Priority</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>AI Assistant Behavior</label>
-                            <select id="settings-ai-mode">
-                                <option value="auto">Auto-suggest daily focus sequence</option>
-                                <option value="manual">Manual trigger only</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
                             <label>Keyboard Shortcuts</label>
-                            <div style="font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 8px;">
+                            <div style="font-size: 13px; color: var(--text-secondary); display: flex; flex-direction: column; gap: 6px;">
                                 <div>Focus Search: <span class="kbd">⌘K</span> or <span class="kbd">/</span></div>
                                 <div>Close Modals: <span class="kbd">ESC</span></div>
                             </div>
@@ -526,115 +370,116 @@
                 </div>
             </main>
         </div>
+
+        <!-- Mobile Bottom Navigation Bar (< 768px) -->
+        <nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+            <button class="mobile-nav-item active" data-view="overview" onclick="switchView('overview')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="6"></circle></svg>
+                <span>Home</span>
+            </button>
+            <button class="mobile-nav-item" data-view="tasks" onclick="switchView('tasks')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Tasks</span>
+            </button>
+            <button class="mobile-nav-item" data-view="ai" onclick="switchView('ai')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"></path></svg>
+                <span>AI</span>
+            </button>
+            <button class="mobile-nav-item" data-view="profile" onclick="switchView('profile')">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path></svg>
+                <span>Profile</span>
+            </button>
+        </nav>
     </div>
 
-    <!-- Create Task Modal -->
-    <div class="modal-backdrop" id="create-modal" aria-hidden="true">
-        <div class="modal-box" role="dialog" aria-labelledby="create-modal-title">
+    <!-- Create & Edit Task Modal / Drawer -->
+    <div class="modal-backdrop" id="task-modal" aria-hidden="true">
+        <div class="modal-box" role="dialog" aria-labelledby="modal-task-title-text">
             <div class="modal-header">
-                <h3 id="create-modal-title">Create New Task</h3>
-                <button class="btn-icon" id="close-create-modal" aria-label="Close modal">&times;</button>
+                <h3 id="modal-task-title-text" style="font-size: 16px; font-weight: 600;">New Task</h3>
+                <button class="btn-icon" onclick="closeAllModals()" aria-label="Close modal">&times;</button>
             </div>
-            <form id="create-task-form">
-                <div class="form-group" id="group-create-title">
-                    <label for="create-title">Title *</label>
-                    <input type="text" id="create-title" placeholder="e.g. Refactor FastAPI JWT endpoints" required>
-                    <div class="form-error">Task title is required.</div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="create-priority">Priority</label>
-                        <select id="create-priority">
-                            <option value="low">Low</option>
-                            <option value="medium" selected>Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="create-category">Category</label>
-                        <select id="create-category">
-                            <option value="Engineering">Engineering</option>
-                            <option value="Design">Design</option>
-                            <option value="Product">Product</option>
-                            <option value="Marketing">Marketing</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="create-due-date">Due Date</label>
-                        <input type="date" id="create-due-date">
-                    </div>
-                    <div class="form-group">
-                        <label for="create-duration">Est. Duration</label>
-                        <select id="create-duration">
-                            <option value="15m">15 mins</option>
-                            <option value="30m" selected>30 mins</option>
-                            <option value="1h">1 hour</option>
-                            <option value="2h">2 hours</option>
-                            <option value="4h">4 hours</option>
-                        </select>
-                    </div>
+            <form id="task-form">
+                <input type="hidden" id="modal-task-id">
+                <div class="form-group">
+                    <label for="task-title-input">Task Title *</label>
+                    <input type="text" id="task-title-input" class="form-input" placeholder="e.g. Build responsive case study section" required>
                 </div>
                 <div class="form-group">
-                    <label for="create-desc">Description</label>
-                    <textarea id="create-desc" placeholder="Details, acceptance criteria or context..."></textarea>
+                    <label for="task-desc-input">Description</label>
+                    <textarea id="task-desc-input" class="form-textarea" placeholder="Add extra details or context..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="task-priority-select">Priority</label>
+                    <select id="task-priority-select" class="form-select">
+                        <option value="low">Low Priority</option>
+                        <option value="medium" selected>Medium Priority</option>
+                        <option value="high">High Priority</option>
+                    </select>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="cancel-create-modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Create Task</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+                    <button type="submit" id="modal-submit-btn" class="btn btn-primary">
+                        <span id="modal-submit-btn-text">Create Task</span>
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Edit Task Modal -->
-    <div class="modal-backdrop" id="edit-modal" aria-hidden="true">
-        <div class="modal-box" role="dialog" aria-labelledby="edit-modal-title">
+    <!-- Delete Confirmation Modal Dialog (No browser confirm()) -->
+    <div class="modal-backdrop" id="delete-confirm-modal" aria-hidden="true">
+        <div class="modal-box" role="dialog" style="max-width: 400px;">
             <div class="modal-header">
-                <h3 id="edit-modal-title">Edit Task</h3>
-                <button class="btn-icon" id="close-edit-modal" aria-label="Close modal">&times;</button>
+                <h3 style="font-size: 16px; font-weight: 600; color: var(--danger);">Delete Task?</h3>
+                <button class="btn-icon" onclick="closeAllModals()">&times;</button>
             </div>
-            <form id="edit-task-form">
-                <input type="hidden" id="edit-task-id">
-                <div class="form-group" id="group-edit-title">
-                    <label for="edit-title">Title *</label>
-                    <input type="text" id="edit-title" required>
-                    <div class="form-error">Title cannot be blank.</div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="edit-priority">Priority</label>
-                        <select id="edit-priority">
-                            <option value="low">Low</option>
-                            <option value="medium">Medium</option>
-                            <option value="high">High</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-status">Status</label>
-                        <select id="edit-status">
-                            <option value="pending">In Progress</option>
-                            <option value="completed">Completed</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="edit-desc">Description</label>
-                    <textarea id="edit-desc"></textarea>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" id="cancel-edit-modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                </div>
-            </form>
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 8px;">Are you sure you want to delete <strong id="delete-task-title">this task</strong>?</p>
+            <p style="font-size: 12px; color: var(--text-muted);">This action cannot be undone.</p>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAllModals()">Cancel</button>
+                <button class="btn btn-danger" id="confirm-delete-btn">Delete</button>
+            </div>
         </div>
     </div>
 
-    <!-- Toast Notifications Area -->
+    <!-- Ask TaskFlow AI Drawer Modal -->
+    <div class="modal-backdrop" id="ai-assistant-modal" aria-hidden="true">
+        <div class="modal-box" role="dialog" style="max-width: 440px;">
+            <div class="modal-header">
+                <div style="display: flex; align-items: center; gap: 8px; color: var(--accent);">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"></path></svg>
+                    <h3 style="font-size: 16px; font-weight: 600;">✨ Ask TaskFlow AI</h3>
+                </div>
+                <button class="btn-icon" onclick="closeAllModals()">&times;</button>
+            </div>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">What would you like TaskFlow AI to help you with today?</p>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+                <button class="btn btn-secondary" style="justify-content: flex-start;" onclick="showToast('AI Focus Schedule generated', 'success'); closeAllModals();">
+                    <span>⚡ Organize my daily focus sequence</span>
+                </button>
+                <button class="btn btn-secondary" style="justify-content: flex-start;" onclick="showToast('Subtasks generated', 'success'); closeAllModals();">
+                    <span>🧩 Break down my active tasks</span>
+                </button>
+                <button class="btn btn-secondary" style="justify-content: flex-start;" onclick="showToast('Priority analysis complete', 'success'); closeAllModals();">
+                    <span>📊 Analyze my completion velocity</span>
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAllModals()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
     <div id="toast-container" aria-live="polite"></div>
 
     <script src="js/api.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/modal.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>
