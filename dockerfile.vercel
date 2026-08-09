@@ -1,0 +1,24 @@
+# Identical to our local Dockerfile through the dependency-install stage —
+# same base image, same layer ordering, same caching benefits.
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY app/ ./app/
+COPY frontend/ ./frontend/
+
+# No EXPOSE here — Vercel's container runtime doesn't use it the way
+# local `docker run -p` does; the routing is handled by Vercel itself.
+
+# THE key difference from our local Dockerfile: Vercel assigns a port via
+# the $PORT environment variable at runtime (defaulting to 80), and we
+# don't know its value until the container actually starts. Exec-form CMD
+# (a plain list, like our local Dockerfile uses) does NOT expand
+# environment variables — "$PORT" would be passed as a literal string.
+# Wrapping in "sh -c" forces real shell expansion, so the actual assigned
+# port is substituted at container startup. The ${PORT:-8000} fallback
+# means this same file still works fine if run locally without $PORT set.
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
