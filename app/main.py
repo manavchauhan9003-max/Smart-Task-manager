@@ -15,6 +15,9 @@ from app.core.config import settings
 from app.exceptions.tasks import TaskNotFoundError
 from app.exceptions.users import EmailAlreadyRegisteredError, InvalidCredentialsError
 
+from app.services.ai_service import AIServiceError
+from app.api import ai as ai_router
+
 APP_VERSION = "1.0.0"
 
 logging.basicConfig(
@@ -128,6 +131,30 @@ def health_check():
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
     }
 
+
+# Add this handler alongside your existing TaskNotFoundError /
+# EmailAlreadyRegisteredError / InvalidCredentialsError handlers:
+ 
+@app.exception_handler(AIServiceError)
+def handle_ai_service_error(request: Request, exc: AIServiceError):
+    # 502 Bad Gateway, not 500 -- this is the correct, meaningful distinction:
+    # 500 says "our own code has a bug." 502 says "we're fine, but an
+    # external service we depend on failed." The AI provider is exactly
+    # that kind of external dependency (Step 1's request-flow diagram).
+    logger.error(f"AI service error: {exc}")
+    return JSONResponse(
+        status_code=502,
+        content={
+            "success": False,
+            "message": "The AI service is currently unavailable. Please try again.",
+            "error": {"code": "AI_SERVICE_ERROR"},
+        },
+    )
+ 
+ 
+# Add this alongside your existing app.include_router(auth.router) /
+# app.include_router(tasks.router) calls:
+app.include_router(ai_router.router)
 
 app.include_router(auth.router)
 app.include_router(tasks.router)

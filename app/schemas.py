@@ -1,9 +1,17 @@
 from pydantic import BaseModel, EmailStr, Field, field_validator
 from datetime import datetime
-from typing import Optional, Literal, Generic, TypeVar
+from typing import Optional, Literal, Generic, TypeVar,List
 
 T = TypeVar("T")
 
+class TaskBreakdownResponse(BaseModel):
+    subtasks: List[str] = Field(
+        ...,
+        description="An ordered list of concrete, actionable subtasks",
+        min_length=1,
+        max_length=10,
+    )
+ 
 
 class APIResponse(BaseModel, Generic[T]):
     success: bool = True
